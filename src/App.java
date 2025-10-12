@@ -101,14 +101,16 @@ public class App {
     	} catch (IOException excecaoArquivo) {
     		produtosCadastrados = null;
     	} finally {
-    		arquivo.close();
+    		if (arquivo != null) {
+    			arquivo.close();
+    		}
     	}
     	
     	return produtosCadastrados;
     }
     
     /** Localiza um produto no vetor de produtos cadastrados, a partir do código de produto informado pelo usuário, e o retorna. 
-     *  Em caso de não encontrar o produto, retorna null 
+     * Em caso de não encontrar o produto, retorna null 
      */
     static Produto localizarProduto() {
         
@@ -129,8 +131,8 @@ public class App {
     }
     
     /** Localiza um produto no vetor de produtos cadastrados, a partir do nome de produto informado pelo usuário, e o retorna. 
-     *  A busca não é sensível ao caso. Em caso de não encontrar o produto, retorna null
-     *  @return O produto encontrado ou null, caso o produto não tenha sido localizado no vetor de produtos cadastrados.
+     * A busca não é sensível ao caso. Em caso de não encontrar o produto, retorna null
+     * @return O produto encontrado ou null, caso o produto não tenha sido localizado no vetor de produtos cadastrados.
      */
     static Produto localizarProdutoDescricao() {
         
@@ -143,7 +145,7 @@ public class App {
     	System.out.println("Digite o nome ou a descrição do produto desejado:");
         descricao = teclado.nextLine();
         for (int i = 0; (i < quantosProdutos && !localizado); i++) {
-        	if (produtosCadastrados[i].descricao.equals(descricao)) {
+        	if (produtosCadastrados[i].descricao.equalsIgnoreCase(descricao)) {
         		produto = produtosCadastrados[i];
         		localizado = true;
     		}
@@ -155,7 +157,7 @@ public class App {
     private static void mostrarProduto(Produto produto) {
     	
         cabecalho();
-        String mensagem = "Dados inválidos para o produto!";
+        String mensagem = "Produto não localizado!";
         
         if (produto != null){
             mensagem = String.format("Dados do produto:\n%s", produto);
@@ -174,8 +176,7 @@ public class App {
         }
     }
     
-    /** 
-     * Inicia um novo pedido.
+    /** * Inicia um novo pedido.
      * Permite ao usuário escolher e incluir produtos no pedido.
      * @return O novo pedido
      */
@@ -208,12 +209,58 @@ public class App {
      */
     public static void finalizarPedido(Pedido pedido) {
     	
-    	// TODO
+    	if (pedido != null && pedido.getQuantosProdutos() > 0) {
+            pilhaPedidos.empilhar(pedido);
+            System.out.println("Pedido finalizado e adicionado à pilha de pedidos recentes.");
+        } else {
+            System.out.println("Nenhum pedido foi iniciado ou o pedido está vazio. Inicie um novo pedido antes de finalizar.");
+        }
     }
     
+    /**
+	 * Implementa a funcionalidade de listar os produtos dos pedidos mais recentes.
+	 * Pede ao usuário o número de pedidos a serem exibidos e utiliza a subPilha para
+	 * obter os dados e, então, exibi-los.
+	 */
     public static void listarProdutosPedidosRecentes() {
     	
-    	// TODO
+    	cabecalho();
+		System.out.println("LISTANDO PRODUTOS DE PEDIDOS RECENTES");
+		
+		if (pilhaPedidos.vazia()){
+			System.out.println("Ainda não há pedidos finalizados.");
+			return;
+		}
+
+		Integer numPedidos = lerOpcao("Quantos pedidos recentes você deseja listar?", Integer.class);
+		
+		if(numPedidos == null || numPedidos <= 0){
+			System.out.println("Número inválido de pedidos.");
+			return;
+		}
+
+		try {
+			Pilha<Pedido> pedidosRecentes = pilhaPedidos.subPilha(numPedidos);
+			
+			System.out.println("\n--- Listando produtos de " + pedidosRecentes.size() + " pedido(s) mais recente(s) ---");
+			
+			int contador = 1;
+			while (!pedidosRecentes.vazia()) {
+				Pedido p = pedidosRecentes.desempilhar();
+				System.out.println("\n================ PEDIDO " + contador++ + " (ID: " + p.getIdPedido() + ") ================");
+				
+				Produto[] produtosDoPedido = p.getProdutos();
+				for (int i = 0; i < p.getQuantosProdutos(); i++) {
+					// O replace é usado para que o produto perecível seja impresso em uma única linha
+					System.out.println("- " + produtosDoPedido[i].toString().replace("\n", " | "));
+				}
+			}
+			System.out.println("==========================================================");
+
+		} catch (IllegalArgumentException e) {
+			System.out.println("ERRO: " + e.getMessage());
+			System.out.println("Atualmente, existem apenas " + pilhaPedidos.size() + " pedido(s) na pilha.");
+		}
     }
     
 	public static void main(String[] args) {
@@ -228,18 +275,24 @@ public class App {
         int opcao = -1;
       
         do{
+			limparTela();
             opcao = menu();
+			limparTela();
             switch (opcao) {
                 case 1 -> listarTodosOsProdutos();
                 case 2 -> mostrarProduto(localizarProduto());
                 case 3 -> mostrarProduto(localizarProdutoDescricao());
                 case 4 -> pedido = iniciarPedido();
-                case 5 -> finalizarPedido(pedido);
+                case 5 -> {
+					finalizarPedido(pedido);
+					pedido = null; // Limpa o pedido atual para que não seja finalizado novamente
+				}
                 case 6 -> listarProdutosPedidosRecentes();
             }
             pausa();
         }while(opcao != 0);       
 
+        System.out.println("Obrigado por utilizar o sistema!");
         teclado.close();    
     }
 }
