@@ -10,7 +10,7 @@ public class Pedido implements Comparable<Pedido>{
 	private int idPedido;
 	
 	/** Quantidade máxima de produtos de um pedido */
-	private static final int MAX_PRODUTOS = 10;
+	public static final int MAX_PRODUTOS = 10;
 	
 	/** Porcentagem de desconto para pagamentos à vista */
 	private static final double DESCONTO_PG_A_VISTA = 0.15;
