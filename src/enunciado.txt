@@ -1,0 +1,35 @@
+Tarefa 1: (em aula)
+
+Crie uma classe genérica Fila<E> com a estrutura vista em sala e os métodos inserir e remover. (ver o slide 8 da aula teórica)
+
+Tarefa 2: (iniciar em aula)
+
+Implemente o método
+double calcularValorMedio(Function<E, Double> extrator, int quantidade)
+na classe Fila<E>.
+Esse método deve ser capaz de calcular e retornar o valor médio de um dos atributos dos elementos da fila, utilizando uma função de extração fornecida pelo parâmetro extrator, que extrai um valor numérico (Double) de cada elemento da fila.
+Devem ser extraídos valores de apenas os primeiros elementos armazenados na fila, de acordo com o parâmetro quantidade.
+
+Tarefa 3: (iniciar em aula)
+
+Implemente o método
+Fila<E> filtrar(Predicate<E> condicional, int quantidade)
+na classe Fila<E>.
+Esse método deve ser capaz de retornar uma nova fila contendo apenas os elementos da fila original que satisfazem uma condição específica.
+Esse método deve apresentar dois parâmetros:
+
+condicional: função que testa se um determinado elemento deve ser enfileirado na nova fila;
+
+quantidade: indica quantos primeiros elementos da fila original devem ser submetidos ao teste.
+
+Tarefa 4: (para casa — opcional)
+
+Acrescente ao menu do sistema de comércio as seguintes novas opções:
+
+Exibir o valor total médio dos N primeiros pedidos;
+
+Exibir os primeiros pedidos com valor total acima de um determinado valor;
+
+Exibir os primeiros pedidos que apresentam um determinado produto.
+
+Implemente os métodos correspondentes a essas novas funcionalidades do sistema de comércio. Para isso, empregue métodos da classe Fila.
